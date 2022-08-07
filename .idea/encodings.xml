@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/main/java/edu/isistan/spellchecker/SpellChecker.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/src/main/java/edu/isistan/spellchecker/corrector/Dictionary.java" charset="windows-1252" />
+    <file url="file://$PROJECT_DIR$/src/main/java/edu/isistan/spellchecker/corrector/impl/FileCorrector.java" charset="windows-1252" />
     <file url="file://$PROJECT_DIR$/src/main/java/edu/isistan/spellchecker/tokenizer/TokenScanner.java" charset="windows-1252" />
   </component>
 </project>
