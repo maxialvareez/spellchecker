@@ -1,11 +1,15 @@
 package edu.isistan.spellchecker;
+import edu.isistan.spellchecker.corrector.Corrector;
 import edu.isistan.spellchecker.corrector.Dictionary;
+import edu.isistan.spellchecker.corrector.impl.FileCorrector;
 import edu.isistan.spellchecker.tokenizer.TokenScanner;
 import org.junit.*;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static org.junit.Assert.*;
 
@@ -105,6 +109,33 @@ public class MyTests {
         assertTrue("'BaNaNa' -> should be true ('banana' in file)", d.isWord("Banana"));
     }
 
+    private Set<String> makeSet(String[] strings) {
+        Set<String> mySet = new TreeSet<String>();
+        for (String s : strings) {
+            mySet.add(s);
+        }
+        return mySet;
+    }
+
+    /* Falta un test */
+
+    @Test
+    public void testSinCorrecciones() throws IOException, FileCorrector.FormatException  {
+        Corrector c = FileCorrector.make("smallMisspellings.txt");
+        assertEquals("sinerror", makeSet(new String[]{}), c.getCorrections("sinerror"));
+    }
+
+    @Test
+    public void testMultiplesCorrecciones() throws IOException, FileCorrector.FormatException  {
+        Corrector c = FileCorrector.make("smallMisspellings.txt");
+        assertEquals("TIGGER -> {Trigger,Tiger}", makeSet(new String[]{"Trigger","Tiger"}), c.getCorrections("TIGGER"));
+    }
+
+    @Test
+    public void testMultipleCorrectionesMinMay() throws IOException, FileCorrector.FormatException  {
+        Corrector c = FileCorrector.make("smallMisspellings.txt");
+        assertEquals("Tigger -> {Trigger,Tiger}", makeSet(new String[]{"Trigger","Tiger"}), c.getCorrections("Tigger"));
+    }
 
 
 }

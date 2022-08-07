@@ -1,8 +1,9 @@
 package edu.isistan.spellchecker.corrector.impl;
 
-import java.util.Set;
+import java.util.*;
 
 import edu.isistan.spellchecker.corrector.Corrector;
+import edu.isistan.spellchecker.tokenizer.TokenScanner;
 
 import java.io.*;
 
@@ -11,6 +12,8 @@ import java.io.*;
  * 
  */
 public class FileCorrector extends Corrector {
+
+	private TreeMap<String, TreeSet<String>> correcciones = new TreeMap<>();
 
 	/** Clase especial que se utiliza al tener 
 	 * algún error de formato en el archivo de entrada.
@@ -78,7 +81,30 @@ public class FileCorrector extends Corrector {
 	 * @throws IllegalArgumentException reader es null
 	 */
 	public FileCorrector(Reader r) throws IOException, FormatException {
+		if(r == null){  //Si es null, excepción.
+			throw new IllegalArgumentException();
+		}
+		BufferedReader read = new BufferedReader(r);
+		String line;
+		while((line = read.readLine()) != null){ // Si cada linea que se lee es distinta de null.
+			String nuevaLinea = line.trim().toLowerCase();
+			String[] palabras = nuevaLinea.split(","); // Se separan en la coma.
+			if(palabras.length != 2){ // Si no hay dos palabras en el arreglo, es un error de formato.
+				throw new FileCorrector.FormatException("Error de formato");
+			}
+			String error = palabras[0].trim(); // La primera parte es el error.
+			String palabraCorrecta = palabras[1].trim(); // La segunda parte es la parte correcta.
 
+			TreeSet<String> correccionesArchivo = correcciones.get(error);
+			if(correccionesArchivo == null){ // Si no había correciones en el archivo, de esa palabra.
+				TreeSet<String> nuevaCorreccion = new TreeSet<>();
+				nuevaCorreccion.add(palabraCorrecta);
+				correcciones.put(error, nuevaCorreccion); // Se agrega el error y un set con la palabra correcta.
+			} else {
+				correccionesArchivo.add(palabraCorrecta);
+				correcciones.put(error, correccionesArchivo); // Se agrega la corrección al set, total si está repetida no se agrega.
+			}
+		}
 	}
 
 	/** Construye el Filereader.
@@ -110,6 +136,15 @@ public class FileCorrector extends Corrector {
 	 * @throws IllegalArgumentException si la entrada no es una palabra válida 
 	 */
 	public Set<String> getCorrections(String wrong) {
-		return null;
+		if(!TokenScanner.isWord(wrong)){
+			throw new IllegalArgumentException();
+		}
+		String aux = wrong.trim().toLowerCase();
+		TreeSet<String> correccionesArchivo = correcciones.get(aux);
+		if(correccionesArchivo != null){
+			Set<String> correcta = matchCase(wrong, correccionesArchivo);
+			return correcta;
+		}
+		return new TreeSet<>();
 	}
 }

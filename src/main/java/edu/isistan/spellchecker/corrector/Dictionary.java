@@ -15,7 +15,7 @@ import edu.isistan.spellchecker.tokenizer.TokenScanner;
  */
 public class Dictionary {
 
-		private TreeSet<String> dictionary;
+		private TreeSet<String> dictionary; // No agrega repetidos el TreeSet, es una buena opción.
 	/**
 	 * Construye un diccionario usando un TokenScanner
 	 * <p>
