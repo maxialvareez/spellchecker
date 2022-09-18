@@ -28,6 +28,8 @@ public class TokenScanner implements Iterator<String> {
         if (in != null) {
             this.r = in;
             this.c = r.read();
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 
@@ -57,12 +59,14 @@ public class TokenScanner implements Iterator<String> {
     public static boolean isWord(String s) {
         boolean palabraValida = true;
         if (s != null) {
-            for (int i = 0; i < s.length(); i++) {
-                if (!isWordCharacter(s.charAt(i))) {
-                    palabraValida = false;
+            if (!s.isEmpty()) {
+                for (int i = 0; i < s.length(); i++) {
+                    if (!isWordCharacter(s.charAt(i))) {
+                        palabraValida = false;
+                    }
                 }
+                return palabraValida;
             }
-            return palabraValida;
         }
         return false;
     }

@@ -31,15 +31,15 @@ public class TokenScannerTest {
   @Test public void testIsWord() {
       assertTrue(TokenScanner.isWord("a"));
       assertTrue(TokenScanner.isWord("A"));
-		assertTrue(TokenScanner.isWord("true"));
-		assertTrue(TokenScanner.isWord("CIS'S"));
-		assertFalse(TokenScanner.isWord(""));
-		assertFalse(TokenScanner.isWord(null));
-  	   assertFalse(TokenScanner.isWord("1"));
-  	   assertFalse(TokenScanner.isWord("a1"));
-  	   assertFalse(TokenScanner.isWord("123"));
-  	   assertFalse(TokenScanner.isWord("123"));
-  	   assertFalse(TokenScanner.isWord(" a"));
+      assertTrue(TokenScanner.isWord("true"));
+      assertTrue(TokenScanner.isWord("CIS'S"));
+      assertFalse(TokenScanner.isWord(""));
+      assertFalse(TokenScanner.isWord(null));
+      assertFalse(TokenScanner.isWord("1"));
+      assertFalse(TokenScanner.isWord("a1"));
+      assertFalse(TokenScanner.isWord("123"));
+      assertFalse(TokenScanner.isWord("123"));
+      assertFalse(TokenScanner.isWord(" a"));
   }		  
 
   

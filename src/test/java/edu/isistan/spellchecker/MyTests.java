@@ -2,9 +2,11 @@ package edu.isistan.spellchecker;
 import edu.isistan.spellchecker.corrector.Corrector;
 import edu.isistan.spellchecker.corrector.Dictionary;
 import edu.isistan.spellchecker.corrector.impl.FileCorrector;
+import edu.isistan.spellchecker.corrector.impl.SwapCorrector;
 import edu.isistan.spellchecker.tokenizer.TokenScanner;
 import org.junit.*;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -21,7 +23,7 @@ public class MyTests {
         Reader in = new StringReader("");
         TokenScanner ts = new TokenScanner(in);
 
-        assertTrue(TokenScanner.isWord(""));
+        assertFalse(TokenScanner.isWord(""));
         assertFalse(ts.hasNext());
     }
 
@@ -117,7 +119,7 @@ public class MyTests {
         return mySet;
     }
 
-    /* Falta un test */
+    /* Falta un test de FileCorrector */
 
     @Test
     public void testSinCorrecciones() throws IOException, FileCorrector.FormatException  {
@@ -135,6 +137,41 @@ public class MyTests {
     public void testMultipleCorrectionesMinMay() throws IOException, FileCorrector.FormatException  {
         Corrector c = FileCorrector.make("smallMisspellings.txt");
         assertEquals("Tigger -> {Trigger,Tiger}", makeSet(new String[]{"Trigger","Tiger"}), c.getCorrections("Tigger"));
+    }
+
+    @Test
+    public void testDiccionarioNull() throws IOException {
+        try {
+            new SwapCorrector(null);
+            fail("Fallo");
+        } catch (IllegalArgumentException f) {
+        }
+    }
+
+    @Test
+    public void testPalabraDiccionario() throws IOException {
+        Reader reader = new FileReader("smallDictionary.txt");
+
+        try {
+            Dictionary d = new Dictionary(new TokenScanner(reader));
+            SwapCorrector swap = new SwapCorrector(d);
+            assertEquals("hers -> {}", makeSet(new String[]{}), swap.getCorrections("hers"));
+        } finally {
+            reader.close();
+        }
+    }
+
+    @Test
+    public void testDistintasCapitalizaciones() throws IOException {
+        Reader reader = new FileReader("smallDictionary.txt");
+
+        try {
+            Dictionary d = new Dictionary(new TokenScanner(reader));
+            SwapCorrector swap = new SwapCorrector(d);
+            assertEquals("eT -> {Te}", makeSet(new String[]{"Te"}), swap.getCorrections("Et"));
+        } finally {
+            reader.close();
+        }
     }
 
 
