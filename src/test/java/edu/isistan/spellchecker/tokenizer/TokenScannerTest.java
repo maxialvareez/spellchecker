@@ -44,23 +44,44 @@ public class TokenScannerTest {
 
   
   @Test public void testGetNextTokenWord() throws IOException {
-	 Reader in = new StringReader("Aren't you \ntired"); 
+	 Reader in = new StringReader("They aren't brown, are they?");
     TokenScanner d = new TokenScanner(in);
     try {
       assertTrue("has next", d.hasNext());
-      assertEquals("Aren't", d.next());
+      assertEquals("They", d.next());
 
       assertTrue("has next", d.hasNext());
       assertEquals(" ", d.next());
 
       assertTrue("has next", d.hasNext());
-      assertEquals("you", d.next());
+      assertEquals("aren't", d.next());
+
+        assertTrue("has next", d.hasNext());
+        assertEquals(" ", d.next());
 
       assertTrue("has next", d.hasNext());
-      assertEquals(" \n", d.next());
+      assertEquals("brown", d.next());
+
+//        assertTrue("has next", d.hasNext());
+//        assertEquals(" ", d.next());
 
       assertTrue("has next", d.hasNext());
-      assertEquals("tired", d.next());
+      assertEquals(",", d.next());
+
+//        assertTrue("has next", d.hasNext());
+//        assertEquals(" ", d.next());
+
+        assertTrue("has next", d.hasNext());
+        assertEquals("are", d.next());
+
+        assertTrue("has next", d.hasNext());
+        assertEquals(" ", d.next());
+
+        assertTrue("has next", d.hasNext());
+        assertEquals("they", d.next());
+
+        assertTrue("has next", d.hasNext());
+        assertEquals("?", d.next());
 
       assertFalse("reached end of stream", d.hasNext());
     } finally {

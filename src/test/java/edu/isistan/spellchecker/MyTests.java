@@ -111,6 +111,9 @@ public class MyTests {
         assertTrue("'BaNaNa' -> should be true ('banana' in file)", d.isWord("Banana"));
     }
 
+
+
+
     private Set<String> makeSet(String[] strings) {
         Set<String> mySet = new TreeSet<String>();
         for (String s : strings) {
@@ -120,6 +123,33 @@ public class MyTests {
     }
 
     /* Falta un test de FileCorrector */
+
+    @Test
+    public void testEspaciosComas() throws IOException{
+        Reader in = new StringReader("Aren't you \ntired");
+        TokenScanner d = new TokenScanner(in);
+        try {
+            assertTrue("has next", d.hasNext());
+            assertEquals("Aren't", d.next());
+
+            assertTrue("has next", d.hasNext());
+            assertEquals(" ", d.next());
+
+            assertTrue("has next", d.hasNext());
+            assertEquals("you", d.next());
+
+            assertTrue("has next", d.hasNext());
+            assertEquals(" \n", d.next());
+
+            assertTrue("has next", d.hasNext());
+            assertEquals("tired", d.next());
+
+            assertFalse("reached end of stream", d.hasNext());
+        } finally {
+            in.close();
+        }
+    }
+
 
     @Test
     public void testSinCorrecciones() throws IOException, FileCorrector.FormatException  {

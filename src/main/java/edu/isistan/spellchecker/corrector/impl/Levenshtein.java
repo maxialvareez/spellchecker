@@ -2,6 +2,7 @@ package edu.isistan.spellchecker.corrector.impl;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import edu.isistan.spellchecker.corrector.Corrector;
 import edu.isistan.spellchecker.corrector.Dictionary;
@@ -119,14 +120,10 @@ public class Levenshtein extends Corrector {
 		correctionSet.addAll(this.getInsertions(wrong));
 		correctionSet.addAll(this.getSubstitutions(wrong));
 
-		TreeSet<String> correctionSet1 = new TreeSet<>();
 		if (Character.isUpperCase(wrong.toCharArray()[0])){
-			for  (String correction:correctionSet) {
-				correction = correction.substring(0,1).toUpperCase() + correction.substring(1);
-				correctionSet1.add(correction);
-			}
+			correctionSet = correctionSet.stream().map(correction -> correction.substring(0,1).toUpperCase() + correction.substring(1).toLowerCase()).collect(Collectors.toCollection(TreeSet::new));
 		}
-		return correctionSet1;
+		return correctionSet;
 	}
 
 
