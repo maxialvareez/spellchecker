@@ -3,8 +3,6 @@ package edu.isistan.spellchecker.corrector;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.TreeSet;
 
 import edu.isistan.spellchecker.tokenizer.TokenScanner;
 
@@ -17,7 +15,10 @@ import edu.isistan.spellchecker.tokenizer.TokenScanner;
  */
 public class TrieDictionary {
 
-    private TrieDictionary dictionary; // No agrega repetidos el TreeSet, es una buena opción.
+    static final int ALPHABET_SIZE = 27; //Se suma 1 valor para el apóstrofe a las 26
+
+    private TrieNode dictionary; //Nodo raiz
+
     /**
      * Construye un diccionario usando un TokenScanner
      * <p>
@@ -31,17 +32,18 @@ public class TrieDictionary {
      * @throws IllegalArgumentException el TokenScanner es null
      */
     public TrieDictionary(TokenScanner ts) throws IOException {
-        Tree dictionary = new Tree();
+        this. dictionary = new TrieNode();
         if(ts == null){
             throw new IllegalArgumentException();
         }
         while (ts.hasNext()){
             String nextString = ts.next();
             if(TokenScanner.isWord(nextString)){
-                dictionary.add(nextString.toLowerCase());
+                this.insert(nextString.toLowerCase());
             }
         }
     }
+
 
     /**
      * Construye un diccionario usando un archivo.
@@ -51,9 +53,9 @@ public class TrieDictionary {
      * @throws FileNotFoundException si el archivo no existe
      * @throws IOException Error leyendo el archivo
      */
-    public static Dictionary make(String filename) throws IOException {
+        public static TrieDictionary make(String filename) throws IOException {
         Reader r = new FileReader(filename);
-        Dictionary d = new Dictionary(new TokenScanner(r));
+        TrieDictionary d = new TrieDictionary(new TokenScanner(r));
         r.close();
         return d;
     }
@@ -65,10 +67,10 @@ public class TrieDictionary {
      *
      * @return número de palabras únicas
      */
-    public int getNumWords() {
-        int numPalabras = dictionary.size();
-        return numPalabras;
-    }
+//    public int getNumWords() {
+//        int numPalabras = dictionary.size();
+//        return numPalabras;
+//    }
 
     /**
      * Testea si una palabra es parte del diccionario. Si la palabra no está en
@@ -78,105 +80,66 @@ public class TrieDictionary {
      *
      *Llamar a este método no debe reabrir el archivo de palabras.
      *
-     * @param word verifica si la palabra está en el diccionario.
+     * @param //word verifica si la palabra está en el diccionario.
      * Asuma que todos los espacios en blanco antes y despues de la palabra fueron removidos.
      * @return si la palabra está en el diccionario.
      */
     public boolean isWord(String word) {
         if(word != null){
-            return dictionary.contains(word.toLowerCase());
+            return this.search(word.toLowerCase());
         }
         return false;
     }
 
-    public class Tree {
-        private Node root;
 
-        public Tree() {
-            root = new Node();
-            root.children = new ArrayList<Node>();
+   //Métodos de búsqueda e inserción en el Trie
+
+    public void insert(String key)
+    {
+        int level;
+        int length = key.length();
+        int index;
+
+        TrieNode current = this.dictionary;
+
+        for (level = 0; level < length; level++)
+        {
+            if (key.charAt(level) == '\'')
+                index = 26;
+            else
+                index = key.charAt(level) - 'a';  //Se le resta el valor en ASCII de la letra a para que se sitúe entre 0 y 25 (las letras en el array)
+
+            if (current.children[index] == null)
+                current.children[index] = new TrieNode();
+
+            current = current.children[index];
         }
 
-        public void agregar(String palabra) {
+        // mark last node as leaf
+        current.isEndOfWord = true;
+    }
 
+    public boolean search(String key)
+    {
+        int level;
+        int length = key.length();
+        int index;
+        TrieNode current = this.dictionary;
 
-            char[] letras = palabra.toCharArray();
-            if (this.root.parent != null && this.root.children == null){ //si no esta vacio el arbol
-                addWord(this.root,letras,0 );
-            }
+        for (level = 0; level < length; level++)
+        {
+            if (key.charAt(level) == '\'')
+                index = 26;
+            else
+                index = key.charAt(level) - 'a';  //Se le resta el valor en ASCII de la letra a para que se sitúe entre 0 y 25 (las letras en el array)
 
+            if (current.children[index] == null)
+                return false;
 
-        }
-        private void addWord(Node node, char[] letters, int pos) {
-            if (pos <= letters.length) {
-                    int i = 0;
-                    if(node.hasChildren()) {
-                        while (i < node.getChildren().size()) {
-                            if (node.getChildren().get(i).getData() == letters[pos]) {
-                                addWord(node.getChildren().get(i), letters, pos + 1);
-                                break;
-                            }
-                            i++;
-                        }
-                        if (i == node.getChildren().size()) {
-                            node.addChildren(letters[pos]);
-                        }
-                    }
-                    else{
-                        node.addChildren(letters[pos]);
-                        addWord(node.getChildren().get(0), letters,pos+1);
-                    }
-            }
+            current = current.children[index];
         }
 
-        public class Node {
-            private char data;
-            private Node parent;
-            private List<Node> children;
-
-            public Node(){}
-            public Node(char data, Node parent){
-                this.data = data;
-                this.parent = parent;
-            }
-            public List<Node> getChildren(){
-                return this.children;
-        }
-
-            public Node getParent() {
-                return parent;
-            }
-
-            public Node setParent(Node parent) {
-                this.parent = parent;
-                return this;
-            }
-            public void addChildren(char c){
-                if(this.children != null) {
-                    this.children.add(new Node(c, this));
-                }
-                else{
-                    this.children = new ArrayList<>();
-                    this.children.add(new Node(c, this));
-                }
-            }
-
-            public char getData() {
-                return data;
-            }
-
-            public Node setData(char data) {
-                this.data = data;
-                return this;
-            }
-
-            public boolean hasChildren(){
-                if (this.children == null){
-                    return false;
-                }
-                return true;
-            }
-        }
+        return (current.isEndOfWord);
     }
 
 }

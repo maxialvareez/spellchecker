@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 /** Cree sus propios tests. */
 public class MyTests {
 
+    //La entrada es vacia.
     @Test
     public void testEmpty() throws IOException {
         Reader in = new StringReader("");
@@ -27,6 +28,7 @@ public class MyTests {
         assertFalse(ts.hasNext());
     }
 
+    //La entrada tiene una solo token palabra.
     @Test
     public void testUnaPalabra() throws IOException {
         Reader in = new StringReader("una");
@@ -36,6 +38,7 @@ public class MyTests {
         assertEquals("una",ts.next());
     }
 
+    //La entrada tiene un solo token no-palabra.
     @Test
     public void testUnaNoPalabra() throws IOException {
         Reader in = new StringReader("$%");
@@ -46,6 +49,7 @@ public class MyTests {
         assertEquals("$%",ts.next());
     }
 
+    //La entrada tiene los dos tipos de tokens, y termina en un token palabra.
     @Test
     public void testDosPalabrasValido() throws IOException {
         Reader in = new StringReader("$% hola");
@@ -62,6 +66,7 @@ public class MyTests {
 
     }
 
+    //La entrada tiene los dos tipos de tokens, y termina en un token no palabra.
     @Test
     public void testDosPalabrasNoValido() throws IOException {
         Reader in = new StringReader("hola $%");
@@ -78,30 +83,35 @@ public class MyTests {
 
     }
 
+    //Chequear por una palabra que está en el diccionario.
     @Test
     public void testContainsWord() throws IOException {
         Dictionary d = Dictionary.make("smallDictionary.txt");
         assertTrue("'apple' -> should be true ('apple' in file)", d.isWord("apple"));
     }
 
+    //Chequear por una palabra que NO está en el diccionario.
     @Test
     public void testNotContainsWord() throws IOException{
         Dictionary d = Dictionary.make("smallDictionary.txt");
         assertFalse("'pineapple' -> should be false", d.isWord("pineapple"));
     }
 
+    //Preguntar por el número de palabras en el diccionario.
     @Test
     public void testDictSize() throws IOException {
         Dictionary d = Dictionary.make("smallDictionary.txt");
         assertEquals("32", 32, d.getNumWords());
     }
 
+    //Verificar que el String vacio “” no sea una palabra.
     @Test
     public void testEmptyString() throws IOException{
         Dictionary d = Dictionary.make("smallDictionary.txt");
         assertFalse("'' -> should be false", d.isWord(""));
     }
 
+    //Chequear que la misma palabra con distintas capitalizaciones esté en el diccionario
     @Test
     public void testDistintasCaps() throws IOException{
         Dictionary d = Dictionary.make("smallDictionary.txt");
@@ -122,8 +132,7 @@ public class MyTests {
         return mySet;
     }
 
-    /* Falta un test de FileCorrector */
-
+    //Probar un archivo con espacios extras en alrededor de las líneas o alrededor de las comas.
     @Test
     public void testEspaciosComas() throws IOException{
         Reader in = new StringReader("Aren't you \ntired");
@@ -150,25 +159,31 @@ public class MyTests {
         }
     }
 
-
+    //Pedir correcciones para una palabra sin correcciones.
     @Test
     public void testSinCorrecciones() throws IOException, FileCorrector.FormatException  {
         Corrector c = FileCorrector.make("smallMisspellings.txt");
         assertEquals("sinerror", makeSet(new String[]{}), c.getCorrections("sinerror"));
     }
 
+    //Pedir correcciones para una palabra con múltiples correcciones.
     @Test
     public void testMultiplesCorrecciones() throws IOException, FileCorrector.FormatException  {
         Corrector c = FileCorrector.make("smallMisspellings.txt");
         assertEquals("TIGGER -> {Trigger,Tiger}", makeSet(new String[]{"Trigger","Tiger"}), c.getCorrections("TIGGER"));
     }
 
+    ////Probar correcciones para palabras con distintas capitalizaciones.
     @Test
-    public void testMultipleCorrectionesMinMay() throws IOException, FileCorrector.FormatException  {
-        Corrector c = FileCorrector.make("smallMisspellings.txt");
-        assertEquals("Tigger -> {Trigger,Tiger}", makeSet(new String[]{"Trigger","Tiger"}), c.getCorrections("Tigger"));
+    public void testDistintasCapitalizacionesFileCorrector() throws IOException,FileCorrector.FormatException {
+        Corrector c = FileCorrector.make("misspellings.txt");
+        assertEquals("TjHe -> {the}", makeSet(new String[]{"The"}), c.getCorrections("TjHe"));
+
     }
 
+                                        //-----------------SwapCorrector---------------
+
+    //Proveer un diccionario null.
     @Test
     public void testDiccionarioNull() throws IOException {
         try {
@@ -178,6 +193,7 @@ public class MyTests {
         }
     }
 
+    //Pedir correcciones para una palabra que está en el diccionario
     @Test
     public void testPalabraDiccionario() throws IOException {
         Reader reader = new FileReader("smallDictionary.txt");
@@ -191,8 +207,9 @@ public class MyTests {
         }
     }
 
+    //Pedir correcciones para una palabra con distintas capitalizaciones.
     @Test
-    public void testDistintasCapitalizaciones() throws IOException {
+    public void testDistintasCapitalizacionesSwapCorrector() throws IOException {
         Reader reader = new FileReader("smallDictionary.txt");
 
         try {
@@ -203,6 +220,7 @@ public class MyTests {
             reader.close();
         }
     }
+
 
 
 }
